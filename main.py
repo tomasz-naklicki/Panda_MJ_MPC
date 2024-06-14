@@ -4,26 +4,30 @@ from robot_descriptions.loaders.mujoco import load_robot_description
 import time
 import numpy as np
 import do_mpc
+from src.mpc_model import MPC
+import matplotlib.pyplot as plt
 
-panda = load_robot_description("panda_mj_description")
-data = mujoco.MjData(panda)
+if __name__ == "__main__":
+    panda = load_robot_description("panda_mj_description")
+    data = mujoco.MjData(panda)
 
+    mpc = MPC(data=data, trajectory_id=0)
 
-with mujoco.viewer.launch_passive(panda, data) as viewer:
-    start = time.time()
-    while viewer.is_running():  # and time.time() - start < 10:
-        step_start = time.time()
-        mujoco.mj_step(panda, data)
-        q_current = np.array(data.qpos).reshape(-1, 1)
-        q_dot_current = np.array(data.qvel).reshape(-1, 1)
+    # Create MPC model
+    # mpc_model = create_model(data)
+    # mpc = create_mpc(mpc_model)
 
-        with viewer.lock():
-            viewer.opt.flags[mujoco.mjtVisFlag.mjVIS_CONTACTPOINT] = int(data.time % 2)
+    # sim = simulate_mpc_mujoco(mpc, panda, data)
 
-        viewer.sync()
+    # Plot results
+    joint_states = mpc.simulate()
+    t = np.arange(len(joint_states[1])) * panda.opt.timestep
 
-        time_until_next_step = panda.opt.timestep - (time.time() - step_start)
-        print(f"JOINT STATES: {q_current}")
-        print(f"VELOCITIES: {q_dot_current}")
-        if time_until_next_step > 0:
-            time.sleep(time_until_next_step)
+    plt.figure()
+    for i in range(7):
+        plt.plot(t, joint_states[i + 1], label=f"Joint {i+1}")
+    # plt.plot(t, get_trajectory(), label="trajectory")
+    plt.xlabel("Time [s]")
+    plt.ylabel("Joint position [rad]")
+    plt.legend()
+    plt.show()
