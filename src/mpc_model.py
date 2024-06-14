@@ -18,10 +18,10 @@ class MPC:
     def get_trajectory(self, trajectory_id: int, t_now):
         if trajectory_id == 0:
             traj = np.sin(np.linspace(0, 2 * np.pi, 21)) * np.ones((7, 21))
+            traj[:6, :] = 0
             t_now_scaled = t_now / 2
             k = int(t_now_scaled % 21)
             return traj.T[k]
-            # return np.array([0, np.pi / 2, np.pi / 3, 0, 0.5, 0, 1])
 
     def get_inertia_matrix(self):
         nv = self.data.model.nv
@@ -103,8 +103,8 @@ class MPC:
         mpc.bounds["lower", "_x", "q"] = -np.pi
         mpc.bounds["upper", "_x", "q"] = np.pi
 
-        mpc.bounds["lower", "_u", "tau"] = -10
-        mpc.bounds["upper", "_u", "tau"] = 10
+        mpc.bounds["lower", "_u", "tau"] = -1000
+        mpc.bounds["upper", "_u", "tau"] = 1000
 
         mpc.setup()
         return mpc
