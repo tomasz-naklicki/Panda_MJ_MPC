@@ -3,9 +3,7 @@ import casadi as ca
 import do_mpc
 import mujoco
 import mujoco.viewer
-from robot_descriptions.loaders.mujoco import load_robot_description
 import time
-import matplotlib.pyplot as plt
 
 
 class MPC:
@@ -92,7 +90,6 @@ class MPC:
         tvp_template = mpc.get_tvp_template()
 
         def tvp_fun(t_now):
-            print(f"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA {t_now}")
             traj = self.get_trajectory(trajectory_id=self.trajectory_id, t_now=t_now)
             for k in range(n_horizon + 1):
                 tvp_template["_tvp", k, "target_joint_states"] = traj

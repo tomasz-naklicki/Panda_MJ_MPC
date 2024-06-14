@@ -1,9 +1,6 @@
 import mujoco
-import mujoco.viewer
 from robot_descriptions.loaders.mujoco import load_robot_description
-import time
 import numpy as np
-import do_mpc
 from src.mpc_model import MPC
 import matplotlib.pyplot as plt
 
